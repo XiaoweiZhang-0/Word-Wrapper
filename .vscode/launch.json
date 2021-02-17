@@ -21,7 +21,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["20"],
+            "args": ["20","h"," "],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
