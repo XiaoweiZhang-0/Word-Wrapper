@@ -49,5 +49,5 @@ Thumbs.db
 *.wmv
 
 # vscode
-.vscode/*
+.vscode/
 /Assignment/Assignment2/.vscode/*
