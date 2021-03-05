@@ -114,6 +114,7 @@ bool read_write(int fd, long int page_width)
         //printf("read a space and printing the word, size of word is %d\n", size_of_word);
         overlimit = (overlimit | print_file(&size_of_word, &char_printed, page_width, word));
     }
+    write(1, &newline, 1);
     free(word);
     return overlimit;
 }
