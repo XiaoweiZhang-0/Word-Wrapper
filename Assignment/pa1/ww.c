@@ -9,13 +9,14 @@
 
 #define char_length 1
 int open_file(int argc, char** argv);
-bool read_write(int fd, long int page_wdith);
-bool print_file(int* size_of_word, int* char_printed, long int page_width, char* word);
+bool read_write(int fd, long int page_wdith, int output);
+bool print_file(int* size_of_word, int* char_printed, long int page_width, char* word, int output);
 int main(int argc, char* argv[])
 {
     int fd;
     long int page_width;
     bool overlimit;
+    int output = 1; // output is the file descriptor where the formatted words should be printed to, 1 means stdout
     fd = open_file(argc, argv);
     page_width = atoi(argv[1]);
     if(page_width <= 0)
@@ -24,7 +25,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    overlimit = read_write(fd, page_width);
+    overlimit = read_write(fd, page_width, output);
     close(fd);
     if(overlimit)
     {
@@ -62,7 +63,7 @@ int open_file(int argc, char** argv)
 }
 
 //read from file and write to standard output
-bool read_write(int fd, long int page_width)
+bool read_write(int fd, long int page_width, int output)
 {
     char* word = malloc(sizeof(char)); //word 
     char buffer[char_length]; //buffer for read
@@ -82,8 +83,8 @@ bool read_write(int fd, long int page_width)
                 //printf("j is %d\n", j);
                 if(newline_counter > 1)
                 {
-                    write(1, &newline, 1);
-                    write(1, &newline, 1);
+                    write(output, &newline, 1);
+                    write(output, &newline, 1);
                     char_printed = 0;
                 }
                 newline_counter = 0;
@@ -99,7 +100,7 @@ bool read_write(int fd, long int page_width)
                     newline_counter++;
                 }
                 //printf("read a space and printing the word, size of word is %d\n", size_of_word);
-                overlimit = (overlimit | print_file(&size_of_word, &char_printed, page_width, word));
+                overlimit = (overlimit | print_file(&size_of_word, &char_printed, page_width, word, output));
             }
             else if(buffer[i] == '\n')
             {   
@@ -112,15 +113,15 @@ bool read_write(int fd, long int page_width)
     if(size_of_word != 0)
     {
         //printf("read a space and printing the word, size of word is %d\n", size_of_word);
-        overlimit = (overlimit | print_file(&size_of_word, &char_printed, page_width, word));
+        overlimit = (overlimit | print_file(&size_of_word, &char_printed, page_width, word, output));
     }
-    write(1, &newline, 1);
+    write(output, &newline, 1);
     free(word);
     return overlimit;
 }
 
 //print the file word by word 
-bool print_file(int* size_of_word, int* char_printed, long int page_width, char* word)
+bool print_file(int* size_of_word, int* char_printed, long int page_width, char* word, int output)
 {
     char space = ' ';
     char newline = '\n';
@@ -129,16 +130,16 @@ bool print_file(int* size_of_word, int* char_printed, long int page_width, char*
     //printf("word is %c\n", word[0]);
     if(line_size < page_width)
     {
-        write(1, word, *size_of_word);
-        write(1, &space, sizeof(char));
+        write(output, word, *size_of_word);
+        write(output, &space, sizeof(char));
         *char_printed = *char_printed + *size_of_word + 1;
         *size_of_word = 0; 
         //printf("---a line is populared");  
     }
     else if(line_size == page_width)
     {
-        write(1, word, (*size_of_word)*sizeof(char));
-        write(1, &newline, sizeof(char));
+        write(output, word, (*size_of_word)*sizeof(char));
+        write(output, &newline, sizeof(char));
         *char_printed = 0;
         *size_of_word = 0;
         //printf("---a line is is full");
@@ -151,10 +152,10 @@ bool print_file(int* size_of_word, int* char_printed, long int page_width, char*
         }
         if(*char_printed != 0)
         {
-            write(1, &newline, sizeof(char));
+            write(output, &newline, sizeof(char));
         }
-        write(1, word, (*size_of_word)*sizeof(char));
-        write(1, &space, sizeof(char));
+        write(output, word, (*size_of_word)*sizeof(char));
+        write(output, &space, sizeof(char));
         *char_printed = *size_of_word+1;
         *size_of_word = 0;
     }
