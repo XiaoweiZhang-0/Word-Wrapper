@@ -3,8 +3,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
-#define char_length 1
+#include <ctype.h>
 
+#include <stdio.h>
+
+#define char_length 20
 int open_file(int argc, char** argv);
 void read_write(int fd, long int page_wdith);
 //void print_file(long int, char*);
@@ -20,8 +23,7 @@ int main(int argc, char* argv[])
     // read(fd, &buffer, 1);
     // write(1, &buffer, 1);
     
-    // read_file(fd, paragraph);
-    // print_file(page_width, paragraph);
+    read_write(fd, page_width);
     close(fd);
 
 }
@@ -31,39 +33,100 @@ int main(int argc, char* argv[])
 int open_file(int argc, char** argv)
 {
     int fd=0;
-    // if(argc < 2 || argc > 3)
-    // {
-    //     char output[] = "Please enter exactly one or two arguments\n";
-    //     write(1, output, strlen(output));
-    //     exit(EXIT_FAILURE);
-    // }
+    if(argc < 2 || argc > 3)
+    {
+        char output[] = "Please enter exactly one or two arguments\n";
+        write(1, output, strlen(output));
+        exit(EXIT_FAILURE);
+    }
     assert(argc == 2 || argc == 3);
     if(argc == 3)
     {
         fd = open(argv[2], O_RDONLY);
-        // if(fd < 0)
-        // {
-        //     char output[] = "Unable to open the file\n";
-        //     write(1, output, strlen(output));
-        //     exit(EXIT_FAILURE);
-        // }
-        assert(fd > 0);
+        if(fd < 0)
+        {
+            char output[] = "Unable to open the file\n";
+            write(1, output, strlen(output));
+            exit(EXIT_FAILURE);
+        }
     }
     return fd;
 }
 
-// void read_write(int fd, long int page_width)
-// {
-//     char* word = NULL;
-//     char buffer[char_length];
-//     int bytes_read;
-//     while(bytes_read = read(fd, buffer, char_length) > 0)
-//     {
-        
-//     }
-//     paragraph = calloc(j+1, sizeof(char));
-//     paragraph[j] = EOF; 
-// }
+void read_write(int fd, long int page_width)
+{
+    char* word = malloc(sizeof(char));
+    char buffer[char_length];
+    int bytes_read;
+    int size_of_word = 0;
+    int char_printed = 0;
+    //int space_counter = 0;
+    char space = ' ';
+    char newline = '\n';
+    int j = 0;
+
+    char blank_line[page_width+1];
+    for(int i=0; i<page_width-1; i++)
+    {
+        blank_line[i] = ' ';
+    }
+    blank_line[page_width] = '\n';
+
+    while((bytes_read = read(fd, buffer, char_length)) > 0)
+    {
+        for(int i=0; i<char_length; i++)
+        {
+            if(!isspace(buffer[i]))
+            {
+                size_of_word++;
+                word = realloc(word, size_of_word*sizeof(char));
+                word[j] = buffer[i];
+                j++;
+                printf("read another char %c\n", word[j-1]);
+            }
+            else if(size_of_word != 0)
+            {
+                //printf("read a space and printing the word, size of word is %d\n", size_of_word);
+
+                if((size_of_word+char_printed) < page_width)
+                {
+                    write(1, word, size_of_word*sizeof(char));
+                    write(1, &space, sizeof(char));
+                    char_printed = char_printed + size_of_word + 1;
+                    size_of_word = 0; 
+                    j = 0;  
+                }
+                else if((size_of_word+char_printed) == page_width)
+                {
+                    write(1, word, size_of_word*sizeof(char));
+                    write(1, &newline, sizeof(char));
+                    char_printed = 0;
+                    size_of_word = 0;
+                    j = 0;
+                    printf("newline\n");
+                }
+                else
+                {
+                    write(1, &newline, sizeof(char));
+                    write(1, word, size_of_word*sizeof(char));
+                    write(1, &space, sizeof(char));
+                    char_printed = size_of_word+1;
+                    size_of_word = 0;
+                    j = 0;
+                }
+            }
+            else
+            {   
+                
+                if(char_printed == 0 && buffer[i] == '\n')
+                {
+                    printf("read a space\n");
+                    write(1, blank_line, page_width+1);
+                }
+            }
+        }
+    }
+}
 
 // void print_file(long int page_width, char* paragraph)
 // {
