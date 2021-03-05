@@ -44,8 +44,8 @@ int open_file(int argc, char** argv)
     int fd=0;
     if(argc < 2 || argc > 3)
     {
-        char output[] = "Please enter exactly one or two arguments\n";
-        write(1, output, strlen(output));
+        char error[] = "Please enter exactly one or two arguments\n";
+        write(1, error, strlen(error));
         exit(EXIT_FAILURE);
     }
     assert(argc == 2 || argc == 3);
@@ -54,8 +54,8 @@ int open_file(int argc, char** argv)
         fd = open(argv[2], O_RDONLY);
         if(fd < 0)
         {
-            char output[] = "Unable to open the file\n";
-            write(1, output, strlen(output));
+            char error[] = "Unable to open the file\n";
+            write(1, error, strlen(error));
             exit(EXIT_FAILURE);
         }
     }
