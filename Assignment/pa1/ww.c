@@ -17,8 +17,14 @@ int main(int argc, char* argv[])
     long int page_width;
     bool overlimit;
     int output = 1; // output is the file descriptor where the formatted words should be printed to, 1 means stdout
+    char new[5+strlen(argv[2])];
+    strcpy(new, "wrap.");
+    strcat(new, argv[2]);
+    output = open(new, O_WRONLY|O_CREAT);
     fd = open_file(argc, argv);
+    
     page_width = atoi(argv[1]);
+
     if(page_width <= 0)
     {
         perror("page width has to be greater than 0\n");
@@ -52,6 +58,7 @@ int open_file(int argc, char** argv)
     if(argc == 3)
     {
         fd = open(argv[2], O_RDONLY);
+        //printf("fd is %s\n", argv[2]);
         if(fd < 0)
         {
             char error[] = "Unable to open the file\n";
