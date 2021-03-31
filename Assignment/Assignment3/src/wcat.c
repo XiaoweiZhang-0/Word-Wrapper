@@ -11,11 +11,21 @@
 #endif
 int main (int argc, char* argv[])
 {
-    assert(argc > 2);
+    //assert(argc > 2);
+    if(argc <= 2)
+    {
+        fprintf(stderr, "%s", "arguments have to be at least 3");
+        abort();
+    }
     int number_of_file = argc-2;
     int page_width = atoi(argv[1]);
     int exit_code = EXIT_SUCCESS;
-    assert(page_width > 0);
+    //assert(page_width > 0);
+    if(page_width <= 0)
+    {
+        fprintf(stderr, "%s", "page width needs to be positive");
+        abort();
+    }
     bool count_file = false;
     //printf("number of files is %d\n", argc-2);
     
