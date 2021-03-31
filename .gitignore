@@ -50,4 +50,4 @@ Thumbs.db
 
 # vscode
 .vscode/
-ww.dSYM/
+*.dSYM/
