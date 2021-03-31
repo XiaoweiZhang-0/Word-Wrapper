@@ -1,4 +1,4 @@
-CS 214 — Spring 2021 (^)   (^)  Assignments
+CS 214 — Spring 2021 Assignment 3
 
 # Assignments
 
