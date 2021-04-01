@@ -33,11 +33,17 @@ int main (int argc, char* argv[])
     {
         struct stat buf;
         char* filename = argv[i+2];
-        stat(filename, &buf);
+        int file_existence = stat(filename, &buf);
+        if(file_existence != 0)
+        {
+            perror("file not exist");
+            exit_code = EXIT_FAILURE;
+            continue;
+        }
         if(S_ISDIR(buf.st_mode))
         {
             //perror("file cannot be a directory");
-            fprintf(stderr, "%s","file cannot be a directory");
+            fprintf(stderr, "%s","file cannot be a directory\n");
             exit_code = EXIT_FAILURE;
             continue;
         }
@@ -57,7 +63,6 @@ int main (int argc, char* argv[])
             close(fd[0]);
             dup2(fd[1], 1);
             int error = execl(WWPATH, WWPATH, argv[1], filename,(char*) NULL);
-            // return EXIT_SUCCESS;
             assert(error != -1);
             fprintf(stderr, "%s","execl failed");
             abort();
@@ -66,10 +71,16 @@ int main (int argc, char* argv[])
         {
             //parent process
             close(fd[1]);
+            int wstatus;
+            if(wait(&wstatus) == -1)
+            {
+                perror("child process malfunctioned\n");
+                abort();
+            }
+            exit_code = (exit_code || WEXITSTATUS(wstatus));
             char buffer[page_width];
             bool nonblank = false;
             int byte_read = read(fd[0], buffer, sizeof(buffer));
-            //printf("%s", buffer);
             for(int j=0; j<byte_read; j++)
             {
                 if(!isspace(buffer[j]))
@@ -94,10 +105,9 @@ int main (int argc, char* argv[])
                 }
                 
             }
-            int wstatus;
-            wait(&wstatus);
+
             close(fd[0]);
-            exit_code = (exit_code || WEXITSTATUS(wstatus));
+
         }
     }
 
