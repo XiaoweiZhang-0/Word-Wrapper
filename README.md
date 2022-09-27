@@ -1,5 +1,5 @@
 # Word Wrapper
-This is a part of System Programming Class
+This is a word wrapper program that reformats a text file to fit in a certain number of columns
 ###### Name                          NetID
 ---
 Xiaowei Zhang            xz561
