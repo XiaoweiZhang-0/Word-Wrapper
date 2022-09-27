@@ -1,4 +1,4 @@
-# WordWrapper
+# Word Wrapper
 This is a part of System Programming Class
 ###### Name                          NetID
 ---
